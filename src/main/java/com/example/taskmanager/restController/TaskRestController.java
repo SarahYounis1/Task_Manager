@@ -60,7 +60,8 @@ public class TaskRestController {
         LOGGER.trace("Redirecting to the Tasks page after deleting task with id : " + id);
 
         taskServiceImplementation.deleteTask(id);
-        
+
+
       return "Deleted task no." +id;
 
     }
