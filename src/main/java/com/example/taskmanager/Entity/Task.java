@@ -83,4 +83,7 @@ public class Task {
     }
 
 
+    public Long getUserId() {
+        return user.getId();
+    }
 }

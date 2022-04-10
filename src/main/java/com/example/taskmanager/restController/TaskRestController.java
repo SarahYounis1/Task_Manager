@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -18,57 +20,49 @@ import java.util.List;
 public class TaskRestController {
 
     private TaskServiceImplementation taskServiceImplementation;
-    private UserServiceImplementation userServiceImplementation;
+   // private UserServiceImplementation userServiceImplementation;
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskRestController.class);
 
     @Autowired
-    public TaskRestController(TaskServiceImplementation taskServiceImplementation,
-                              UserServiceImplementation userServiceImplementation) {
+    public TaskRestController(TaskServiceImplementation taskServiceImplementation) {
         this.taskServiceImplementation =taskServiceImplementation;
-        this.userServiceImplementation =userServiceImplementation;
     }
 
-
-    // expose "/tasks" and return list of tasks
     @GetMapping("/tasks")
-    public List<Task> findAll() {
-
-        return taskServiceImplementation.findAll();
+    public List<Task> returnAllTasks() {
+        LOGGER.info("A get all tasks  request initialized ");
+        LOGGER.trace("retrieve all tasks ");
+        return taskServiceImplementation.getAllTasks();
     }
-
-    // add mapping for GET /tasks/{tasksId} depending on Id and make sure it exists before
-
-    @GetMapping("/tasks/{taskId}")
-    public Task getTask(@PathVariable Long taskId) {
-
-        Task theTask = (Task) taskServiceImplementation.findById(taskId);
-
-        return theTask;
+    @GetMapping("/tasks/{id}")
+    public Task returnTask(@PathVariable Long id) throws  AccessDeniedException {
+        LOGGER.info("A get task request initialized ");
+        LOGGER.trace("retrieve task with id "+ id );
+        return  taskServiceImplementation.getTask(id);
     }
+    @PostMapping("/tasks")
+    public Task createTask(@RequestBody Task task) {
+        LOGGER.info("A create task request initialized ");
+        LOGGER.trace("Creating new  task");
+        return taskServiceImplementation.createTask(task);
+    }
+    @PutMapping("/tasks/{id}")
+    public Task edTask(@RequestBody Task editTask, @PathVariable Long id) throws AccessDeniedException {
+        LOGGER.info("A Update task request initialized ");
+        LOGGER.trace("Updating a task to a user with id : " + id );
+        return taskServiceImplementation.editTask(editTask,id);
 
-    // add mapping for POST /tasks - add new task
 
+    }
+    @DeleteMapping("/tasks/{id}")
+    public String deleteTask(@PathVariable Long id) throws IOException {
+        LOGGER.info("A delete task  request initialized ");
+        LOGGER.trace("Redirecting to the Tasks page after deleting task with id : " + id);
 
-    // add mapping for PUT /tasks - update existing task -- Ask about posting all related information
+        taskServiceImplementation.deleteTask(id);
+        
+      return "Deleted task no." +id;
 
-
-    // add mapping for DELETE /tasks/{taskId} - delete task
-
-    @DeleteMapping("/tasks/{taskId}")
-    public String deleteTask(@PathVariable Long taskId) {
-
-        LOGGER.info("one Task is deleted");
-        Task tempTask = (Task) taskServiceImplementation.findById(taskId);
-
-        // throw Not Found exception if null
-
-        if (tempTask == null) {
-            throw new NotFoundException("Task id not found - " + taskId);
-        }
-
-        taskServiceImplementation.deleteById(taskId);
-
-        return "Deleted Task id - " + taskId;
     }
 
 

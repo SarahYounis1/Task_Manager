@@ -89,6 +89,7 @@ public class UserServiceImplementation {
         return new AuthenticationResponse(jwt);
     }
 
+    @Transactional
     public User editUser(User editUser) {
         User requestingUser= (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();

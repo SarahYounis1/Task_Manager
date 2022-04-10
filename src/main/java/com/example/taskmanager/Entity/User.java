@@ -143,6 +143,11 @@ public class User implements UserDetails {
         this.tasks = tasks;
     }
 
+    public void addTask(Task task) {
+
+        this.tasks.add(task);
+        System.out.println("added");
+    }
 
 //To string method
 
